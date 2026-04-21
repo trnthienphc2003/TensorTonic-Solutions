@@ -5,7 +5,7 @@ def iou(box_a, box_b):
     # Write code here
     pass
 
-    def area(box) -> int:
+    def area(box):
         if box[2] <= box[0] or box[3] <= box[1]:
             return 0
         return (box[2] - box[0]) * (box[3] - box[1])
