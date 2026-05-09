@@ -10,6 +10,5 @@ def prepend_class_token(patches: np.ndarray, embed_dim: int, cls_token: np.ndarr
     if cls_token is None:
         cls_token = np.random.randn((1, 1, D)) * 0.01
 
-    cls_token = np.full((B, 1, D), cls_token[0])
-    patches = np.concatenate([cls_token, patches], axis=1)
+    patches = np.concatenate([np.broadcast_to(cls_token, (B, 1, D)), patches], axis=1)
     return patches
