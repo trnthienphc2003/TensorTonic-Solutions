@@ -1,19 +1,17 @@
+def s(box) -> float:
+    return max(box[2] - box[0], 0) * max(box[3] - box[1], 0)
+
 def iou(box_a, box_b):
     """
     Compute Intersection over Union of two bounding boxes.
     """
     # Write code here
-    pass
+    assert len(box_a) == 4 and len(box_b) == 4
+    x1 = max(box_a[0], box_b[0])
+    y1 = max(box_a[1], box_b[1])
 
-    def area(box):
-        if box[2] <= box[0] or box[3] <= box[1]:
-            return 0
-        return (box[2] - box[0]) * (box[3] - box[1])
+    x2 = min(box_a[2], box_b[2])
+    y2 = min(box_a[3], box_b[3])
 
-    in_x1, in_x2 = max(box_a[0], box_b[0]), min(box_a[2], box_b[2])
-    in_y1, in_y2 = max(box_a[1], box_b[1]), min(box_a[3], box_b[3])
-
-    box_in = [in_x1, in_y1, in_x2, in_y2]
-    s_in = area(box_in)
-    s_un = area(box_a) + area(box_b) - s_in
-    return s_in / s_un
+    s_in = s([x1, y1, x2, y2])
+    return s_in / (s(box_a) + s(box_b) - s_in)
