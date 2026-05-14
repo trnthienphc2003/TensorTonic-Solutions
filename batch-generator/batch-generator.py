@@ -13,8 +13,8 @@ def batch_generator(X, y, batch_size, rng=None, drop_last=False):
         rng = np.random
 
     rng.shuffle(idx)
-    for i in range(0, N, batch_size):
+    stop = N if not drop_last else (N // batch_size) * batch_size
+    for i in range(0, stop, batch_size):
+        # end = i + batch_size
         samp_idx = idx[i : i + batch_size]
-        if len(samp_idx) < batch_size and drop_last:
-            continue
         yield X[samp_idx], y[samp_idx]
