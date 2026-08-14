@@ -3,33 +3,21 @@ import numpy as np
 def impute_missing(X, strategy='mean'):
     """
     Fill NaN values in each feature column using column mean or median.
+    If an entire column is NaN, fill it with 0.
     """
-    # Write code here
-    X_norm = np.asarray(X, dtype=np.float64)
-
-    # reduce_mode = (np.mean if strategy == 'mean' else np.median)
-    X_cannot_impute = np.all(np.isnan(X), axis=0)
-    X_can_impute = np.logical_not(X_cannot_impute)
-    X_valid = np.logical_not(np.isnan(X))
-    # assert False, X_valid
-
-    fill_value = None
-    if strategy == 'mean':
-        fill_value = np.mean(
-            X_norm[..., X_can_impute],
-            axis=0,
-            where=np.logical_not(np.isnan(X_norm[..., X_can_impute]))
-        )
-    else:
-        fill_value = np.median(
-            X_norm[X_valid],
-            axis=0
-        )
-    X_norm[..., X_can_impute] = np.where(
-        np.isnan(X_norm[..., X_can_impute]),
-        fill_value,
-        X_norm[..., X_can_impute]
-    )
-
-    X_norm[..., X_cannot_impute] = 0
-    return X_norm
+    X_imputed = np.array(X, dtype=np.float64, copy=True)
+    
+    # 1. Compute summary statistic per column ignoring NaNs
+    stat_func = np.nanmean if strategy == 'mean' else np.nanmedian
+    
+    with np.errstate(all='ignore'):
+        col_stats = stat_func(X_imputed, axis=0)
+    
+    # 2. Replace NaN statistics (from all-NaN columns) with 0.0
+    col_stats = np.nan_to_num(col_stats, nan=0.0)
+    
+    # 3. Use 2D broadcasting via np.where to fill NaNs directly
+    nan_mask = np.isnan(X_imputed)
+    X_imputed = np.where(nan_mask, col_stats, X_imputed)
+    
+    return X_imputed
