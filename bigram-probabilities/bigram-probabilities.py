@@ -1,23 +1,35 @@
+import numpy as np
+
 def bigram_probabilities(tokens):
     """
     Returns: (counts, probs)
       counts: dict mapping (w1, w2) -> integer count
       probs: dict mapping (w1, w2) -> float P(w2 | w1) with add-1 smoothing
     """
-    # Your code here
-    N = len(tokens)
-    words = list(set(tokens))
-    counts = {}
-    sum = {}
-    for i in range(1, N):
-        counts[(tokens[i - 1], tokens[i])] = counts.get((tokens[i - 1], tokens[i]), 0) + 1
-        sum[tokens[i - 1]] = sum.get(tokens[i - 1], 0) + 1
+    words, ids = np.unique(tokens, return_inverse=True)
+    V = len(words)
+    counts_mat = np.zeros((V, V), dtype=int)
 
-    probs = {}
-    for u in words:
-        s_u = sum.get(u, 0)
-        for v in words:
-            c_uv = counts.get((u, v), 0)
-            probs[(u, v)] = (c_uv + 1) / (s_u + len(words))
+    np.add.at(
+        counts_mat,
+        (ids[:-1], ids[1:]),
+        1
+    )
+
+    prefix_counts = counts_mat.sum(axis=1)
+    probs_mat = (counts_mat + 1) / (prefix_counts[:, None] + V)
+
+    counts = {
+        (words[i], words[j]): counts_mat[i, j].item()
+        for i in range(V)
+        for j in range(V)
+        if counts_mat[i, j] > 0
+    }
+
+    probs = {
+        (words[i], words[j]): probs_mat[i, j].item()
+        for i in range(V)
+        for j in range(V)
+    }
 
     return counts, probs
