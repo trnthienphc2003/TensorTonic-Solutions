@@ -12,8 +12,9 @@ def linear_interpolation(values):
         while r < len(values) and values[r] is None:
             r += 1
 
-        for j in range(l - 1, r, 1):
-            values[j] = values[l - 1] + (j - l + 1) / (r - l + 1) * (values[r] - values[l - 1])
+        step = (values[r] - values[l - 1]) / (r - l + 1)
+        for j in range(l, r, 1):
+            values[j] = values[j - 1] + step
 
         l = r
     return values
