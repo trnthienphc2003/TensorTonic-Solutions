@@ -6,32 +6,13 @@ def mean_rating_imputation(ratings_matrix, mode):
     """
     # Write code here
     n_user, n_item = len(ratings_matrix), len(ratings_matrix[0])
-    ratings_matrix = np.asarray(ratings_matrix)
-    # fill_mask = np.where(ratings_matrix == 0)
-    # assert False, ratings_matrix
-    
-    if mode == 'user':
-        valid_cnt = np.count_nonzero(ratings_matrix, axis=-1, keepdims=True)
-        impute_value = np.sum(ratings_matrix, axis=-1, keepdims=True) / valid_cnt
-        impute_value = np.repeat(impute_value, repeats=n_item, axis=-1)
-        # assert False, impute_value
-        ratings_matrix = np.where(
-            ratings_matrix == 0,
-            impute_value,
-            ratings_matrix
-        )
+    ratings_matrix = np.asarray(ratings_matrix, dtype=np.float64)
+    mask = (ratings_matrix == 0)
+    ratings_matrix[mask] = np.nan
+    axis = -1 if mode == 'user' else 0
 
-    else:
-        valid_cnt = np.count_nonzero(ratings_matrix, axis=0, keepdims=True)
-        impute_value = np.sum(ratings_matrix, axis=0, keepdims=True) / valid_cnt
-        impute_value = np.repeat(impute_value, repeats=n_user, axis=0)
-        # assert False, impute_value
-        ratings_matrix = np.where(
-            ratings_matrix == 0,
-            impute_value,
-            ratings_matrix
-        )
+    impute_value = np.nanmean(ratings_matrix, axis=axis, keepdims=True)
+    impute_value = np.nan_to_num(impute_value, nan=0.0)
 
-    # assert False, ratings_matrix
-    ratings_matrix = np.nan_to_num(ratings_matrix, nan=0.)
+    ratings_matrix = np.where(mask, impute_value, ratings_matrix)
     return ratings_matrix.tolist()
