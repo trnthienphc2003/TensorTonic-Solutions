@@ -1,24 +1,20 @@
 import numpy as np
 
-def pca_projection(X, k):
+def pca_projection(X: list, k: int) -> list:
     """
-    Project data onto the top-k principal components.
+    Returns the centered data projected onto the top components.
     """
     # Write code here
     X = np.asarray(X)
+    n, d = X.shape
+    X_c = X - X.mean(axis=0, keepdims=True)
+    U, S, Vt = np.linalg.svd(X_c)
+    
+    
+    # (N, N), (N, D), (D, D)
+    return X_c @ (Vt.T[..., :k])
 
-    Xc = (X - X.mean(axis=0))
-    # assert False, Xc
-    N, D = Xc.shape
-    C = 1./(N - 1) * (Xc.T @ Xc)
-    # assert False, C
-
-    eig_values, eig_vectors = np.linalg.eig(C)
-    # assert False, eig_values.shape
-    # assert False, eig_vectors.shape
-    idx = np.argsort(eig_values)[::-1]
-    # assert False, f'eigenvalues: {eig_values} idx: {idx}'
-    W = eig_vectors[:, idx[:k]]
-
-    X_proj = Xc @ W
-    return X_proj
+    # S[k:] = 0
+    # assert False, Vt.shape
+    # W = X @ Vt.T[..., :k]
+    # return X_c @ W

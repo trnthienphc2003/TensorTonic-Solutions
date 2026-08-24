@@ -236,8 +236,11 @@ Verified machine learning implementations completed on [TensorTonic](https://www
 | Hidden State Update | Implement the GRU hidden-state interpolation between the previous state and candidate using the update gate. | https://www.tensortonic.com/research/gru/gru-hidden-update |
 | Reset Gate | Implement a GRU reset gate that controls how much of the previous hidden state contributes to the candidate state. | https://www.tensortonic.com/research/gru/gru-reset-gate |
 | Update Gate | Implement a GRU update gate that balances retained hidden memory against the new candidate representation. | https://www.tensortonic.com/research/gru/gru-update-gate |
+| Block Attention Residuals | Implement Kimi K3 block attention residuals with block-local history, learned mixing weights, and normalized outputs. | https://www.tensortonic.com/research/kimik3/k3-block-attnres |
+| Full Attention Residuals | Implement Kimi K3 full attention residuals by mixing normalized layer outputs with learned residual coefficients. | https://www.tensortonic.com/research/kimik3/k3-full-attnres |
 | Gated MLA | Build Kimi K3 Gated MLA with low-rank query and KV projections, per-head gating, RoPE inputs, and latent caching. | https://www.tensortonic.com/research/kimik3/k3-gated-mla |
 | KDA Recurrence | Implement Kimi K3's KDA recurrence with gated state updates, normalized queries and keys, and ordered token readouts. | https://www.tensortonic.com/research/kimik3/k3-kda-recurrence |
+| SiTU-GLU | Implement Kimi K3 SiTU-GLU by combining sigmoid-tanh gated activations with an elementwise linear branch. | https://www.tensortonic.com/research/kimik3/k3-situ-glu |
 | Complete LSTM Cell | Build a complete LSTM cell with forget, input, candidate, cell-state, output, and hidden-state calculations. | https://www.tensortonic.com/research/lstm/lstm-cell |
 | Cell State Update | Implement the LSTM cell-state update by combining retained memory with input-gated candidate information. | https://www.tensortonic.com/research/lstm/lstm-cell-state |
 | Forget Gate | Implement an LSTM forget gate by combining the previous hidden state and current input with a sigmoid projection. | https://www.tensortonic.com/research/lstm/lstm-forget-gate |
