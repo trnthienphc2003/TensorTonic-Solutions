@@ -44,8 +44,9 @@ def gaussian_naive_bayes(X_train: list, y_train: list, X_test: list) -> list:
         for c in range(N_class):
             log_pos = log_P[c]
             for j in range(D):
-                log_pos -= .5 * math.log(2. * math.pi * var[c][j] + eps)
-                log_pos -= ((X_test[i][j] - mean[c][j]) ** 2) / (2. * var[c][j] + eps)
+                v = var[c][j] + eps
+                log_pos -= .5 * math.log(2. * math.pi * v)
+                log_pos -= ((X_test[i][j] - mean[c][j]) ** 2) / (2. * v)
 
             if(log_pos > best_log):
                 best_log = log_pos
