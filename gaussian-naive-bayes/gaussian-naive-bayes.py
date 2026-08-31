@@ -1,58 +1,42 @@
 import math
+import numpy as np
 
 def gaussian_naive_bayes(X_train: list, y_train: list, X_test: list) -> list:
     """
     Returns a predicted class label for every test sample.
     """
     # Write code here
-    N_class = max(y_train) + 1
-    prob = [0.0 for _ in range(N_class)]
-    N, D = len(y_train), len(X_train[0])
-    
-    for c in y_train:
-        prob[c] += 1
-    prob = list(map(lambda x: x / N, prob))
+    (X_train, y_train, X_test) = map(
+        lambda x: np.asarray(x),
+        (X_train, y_train, X_test)
+    )
 
-    mean = [[0.0 for _ in range(D)] for _ in range(N_class)]
-    var = [[0.0 for _ in range(D)] for _ in range(N_class)]
-    for i in range(N):
-        c = y_train[i]
-        for j in range(D):
-            mean[c][j] += X_train[i][j]
-
-    for c in range(N_class):
-        for d in range(D):
-            mean[c][d] /= (prob[c] * N)
-
-    for i in range(N):
-        c = y_train[i]
-        for j in range(D):
-            var[c][j] += (X_train[i][j] - mean[c][j]) ** 2
-
-    for c in range(N_class):
-        for d in range(D):
-            var[c][d] /= (prob[c] * N)
-            
-    log_P = list(map(math.log, prob))
-
-    N_test = len(X_test)
+    N_train, D = X_train.shape
+    C = y_train.max() + 1
+    N_test = X_test.shape
     eps = 1e-8
-    ans = []
-    for i in range(N_test):
-        log_pos = 0.0
-        best_log, best_class = float("-inf"), 0
-        for c in range(N_class):
-            log_pos = log_P[c]
-            for j in range(D):
-                v = var[c][j] + eps
-                log_pos -= .5 * math.log(2. * math.pi * v)
-                log_pos -= ((X_test[i][j] - mean[c][j]) ** 2) / (2. * v)
 
-            if(log_pos > best_log):
-                best_log = log_pos
-                best_class = c
-        # if i == 1:
-        #     assert False, f'{best_log} {best_class}'
-        ans.append(best_class)
+    counts = np.bincount(y_train, minlength=C)
+    prob = counts / N_train
+    log_prob = np.log(prob)
 
-    return ans
+    sums = np.zeros((C, D))
+    np.add.at(sums, y_train, X_train)
+
+    mean = sums / counts[..., None]
+    sq_diff = (X_train - mean[y_train]) ** 2
+    
+    var = np.zeros((C, D), dtype=np.float64)
+    np.add.at(var, y_train, sq_diff)
+    var /= counts[..., None]
+    var += eps
+
+    # log_pos = np.zeros((N_test, C, D))
+    diff = X_test[:, None, :] - mean[None, :, :]
+    log_pos = (
+        - 0.5 * np.log(2. * np.pi * var)
+        - diff ** 2 / (2. * var)
+    ).sum(axis=-1) + log_prob[None, :]
+
+    return np.argmax(log_pos, axis=-1).tolist()
+    # assert False, np.argmax(log_pos, axis=-1)
